@@ -1,0 +1,26 @@
+{
+    "name": "successive/keka",
+    "description": "A wrapper for Keka API",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Somnath",
+            "email": "somnath.jadhav@successive.tech"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Successive\\Keka\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Successive\\Keka\\KekaServiceProvider"
+            ]
+        }
+    }
+}
