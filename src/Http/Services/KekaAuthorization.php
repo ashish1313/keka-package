@@ -2,49 +2,61 @@
 
 namespace Successive\Keka\Http\Services;
 
-class KekaAuthorization{
+/**
+ * Class KekaAuthorization
+ * @package Successive\Keka\Http\Services
+ */
+class KekaAuthorization
+{
 
-    private $accessToken;
 //    private const AUTHORIZATION_URL = 'https://app.keka.com/connect/authorize';
     private const TOKEN_URL = 'https://app.keka.com/connect/token';
     private const scope = 'kekaapi';
     private const GRANT_TYPE = 'code';
 
-    public function setAccessToken(){
+    /**
+     *get the access token and set it into session
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public function setAccessToken()
+    {
 
-        if($this->accessToken){
-            return $this->accessToken;
-        }
         $clientDetails = $this->getClientDetails();
         $data = $this->getAuthorizationToken($clientDetails);
 
-        if ($data instanceof \Exception){
-            return $data;
+        if (array_key_exists('error', $data)) {
+            throw new \Exception($data['error']);
         }
 
-        // Access Token
-//        $access_token = $data['access_token'];
+        if(array_key_exists('access_token', $data) && array_key_exists('expires_in', $data) ){
+            session_start();
+            // Save the access token expiry timestamp
+            $_SESSION['access_token_expiry'] = time() + $data['expires_in'];
 
-        // Refresh Token
-        if(array_key_exists('refresh_token', $data))
-            $refresh_token = $data['refresh_token'];
-
-        // Save the access token expiry timestamp
-        $_SESSION['access_token_expiry'] = time() + $data['expires_in'];
-
-        $_SESSION['access_token'] = $data['access_token'];
-
-
+            $_SESSION['access_token'] = $data['access_token'];
+            return true;
+        }else{
+            throw new \Exception('Response does not contain either Access token or Expiry time');
+        }
     }
 
-    protected function getAuthorizationToken($clientDetails){
+    /**
+     * get the access token
+     *
+     * @param $clientDetails
+     * @return \Exception|mixed
+     */
+    public function getAuthorizationToken($clientDetails)
+    {
         try {
-            $client_id = $clientDetails['client_id'];
-            $client_secret = $clientDetails['client_secret'];
-            $content = "grant_type=".self::GRANT_TYPE."&scope=".self::scope;
+            $client_id = $clientDetails['keka_client_id'];
+            $client_secret = $clientDetails['keka_secret_key'];
+            $content = "grant_type=" . self::GRANT_TYPE . "&scope=" . self::scope;
 
             $authorization = base64_encode("$client_id:$client_secret");
-            $header = array("Authorization: Basic {$authorization}","Content-Type: application/x-www-form-urlencoded");
+            $header = array("Authorization: Basic {$authorization}", "Content-Type: application/x-www-form-urlencoded");
 
             $curl = curl_init();
             curl_setopt_array($curl, array(
@@ -57,21 +69,27 @@ class KekaAuthorization{
             ));
             $response = curl_exec($curl);
             curl_close($curl);
-
-            return json_decode($response);
-        }catch (\Exception $exception){
+            return json_decode($response, true);
+        } catch (\Exception $exception) {
             return $exception;
         }
     }
 
-    protected function getClientDetails(){
-        $clientDetails['client_id'] = env('keka_client_id', '');
-        $clientDetails['client_secret'] = env('keka_secret_key', '');
+    /**
+     * get the client details from project's env
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    protected function getClientDetails()
+    {
+        $clientDetails['keka_client_id'] = env('keka_client_id', '');
+        $clientDetails['keka_secret_key'] = env('keka_secret_key', '');
 
-        if($clientDetails['client_id'] && $clientDetails['client_secret']){
+        if ($clientDetails['keka_client_id'] && $clientDetails['keka_secret_key']) {
             return $clientDetails;
-        }else
-            throw new \Exception('Please Provide the Client Details');
+        } else
+            throw new \Exception('Please Provide the Keka Client Details');
 
     }
 

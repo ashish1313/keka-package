@@ -3,17 +3,18 @@
 namespace Successive\Keka\Http\Services;
 
 
+use Illuminate\Support\Facades\Redis;
 use  Successive\Keka\Http\Services\CurlHelper;
 
 
 class EmployeeService{
 
 
-    private $kekaAuthorization;
+    private $curlHelper;
 
     public function __construct()
     {
-        $this->kekaAuthorization = new KekaAuthorization();
+        $this->curlHelper = new CurlHelper();
     }
 
     //Employee API's
@@ -24,20 +25,25 @@ class EmployeeService{
     const POST_METHOD = 'POST';
     const  GET_METHOD = 'GET';
 
+    /**
+     * @param bool $data
+     * @return mixed
+     */
     public function getEmployees($data = false){
-//        $this->kekaAuthorization->setAccessToken();
-//        if(time() > $_SESSION['access_token_expiry'] || isset($_SESSION['access_token_expiry']) ){
-//            $this->kekaAuthorization->setAccessToken();
-//        }
-//        print_r($_SESSION); die('in here');
-        return CurlHelper::CallAPI(self::POST_METHOD, self::GET_ALL_EMPLOYEES_API, $data);
+        return $this->curlHelper->CallAPI(self::POST_METHOD, self::GET_ALL_EMPLOYEES_API, $data);
     }
 
-    public static function getEmployeeBYId($data){
+    /**
+     * get employee data
+     *
+     * @param $data
+     * @return mixed
+     */
+    public function getEmployeeBYId($data){
         if(is_string($data)){
-            return CurlHelper::CallAPI(self::GET_METHOD, self::GET_EMPLOYEE_BY_ID_API, ['id' => $data]);
+            return $this->curlHelper->CallAPI(self::GET_METHOD, self::GET_EMPLOYEE_BY_ID_API, ['id' => $data]);
         }
-        return CurlHelper::CallAPI(self::GET_METHOD, self::GET_EMPLOYEE_BY_ID_API, $data);
+        return $this->curlHelper->CallAPI(self::GET_METHOD, self::GET_EMPLOYEE_BY_ID_API, $data);
     }
 }
 

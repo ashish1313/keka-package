@@ -1,12 +1,44 @@
 <?php
 
 namespace Successive\Keka\Http\Services;
+
+/**
+ * Class CurlHelper
+ * @package Successive\Keka\Http\Services
+ */
 class CurlHelper
 {
+    /**
+     * @var KekaAuthorization
+     */
+    private $kekaAuthorization;
 
-
-    public static function CallAPI($method, $url, $data = false)
+    /**
+     * CurlHelper constructor.
+     */
+    public function __construct()
     {
+        $this->kekaAuthorization = new KekaAuthorization();
+    }
+
+
+    /**
+     *
+     * @param $method
+     * @param $url
+     * @param bool $data
+     * @return mixed
+     * @throws \Exception
+     */
+    public function CallAPI($method, $url, $data = false)
+    {
+        if (isset($_SESSION['access_token_expiry'])) {
+            if (time() > $_SESSION['access_token_expiry']){
+                $this->kekaAuthorization->setAccessToken();
+            }
+        }else
+            $this->kekaAuthorization->setAccessToken();
+
         $curl = curl_init();
         switch ($method) {
             case "POST":
@@ -23,18 +55,18 @@ class CurlHelper
                     $url = sprintf("%s?%s", $url, http_build_query($data));
         }
 
-        // Optional Authentication:
-        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($curl, CURLOPT_USERPWD, "username:password");
+        $header = array("Authorization: Bearer {$_SESSION['access_token']}");
 
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-
-        $result = curl_exec($curl);
-
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $url,
+            CURLOPT_HTTPHEADER => $header,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_RETURNTRANSFER => true
+        ));
+        $response = curl_exec($curl);
         curl_close($curl);
 
-        return $result;
+        return json_decode($response, true);
     }
 
 }
