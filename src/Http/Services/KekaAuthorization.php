@@ -12,7 +12,7 @@ class KekaAuthorization
     private const TOKEN_URL = 'https://app.keka.com/connect/token';
     private const scope = 'kekaapi';
     private const GRANT_TYPE = 'kekaapi';
-    private  const  API_KEY = 'xnxL4TmblPYFNhTtT9UCrUeRledrXGKpKXKu5qYgJsY=';
+
 
     /**
      *get the access token and set it into session
@@ -53,7 +53,7 @@ class KekaAuthorization
         try {
             $client_id = $clientDetails['keka_client_id'];
             $client_secret = $clientDetails['keka_secret_key'];
-            $content = "grant_type=" . self::GRANT_TYPE . "&scope=" . self::scope.'&apikey='.self::API_KEY;
+            $content = "grant_type=" . self::GRANT_TYPE . "&scope=" . self::scope.'&apikey='.$clientDetails['apikey'];
             $authorization = base64_encode("$client_id:$client_secret");
             $header = array("Authorization: Basic {$authorization}",
                        "Content-Type: application/x-www-form-urlencoded",
@@ -86,8 +86,9 @@ class KekaAuthorization
     {
         $clientDetails['keka_client_id'] = env('keka_client_id', '');
         $clientDetails['keka_secret_key'] = env('keka_secret_key', '');
+        $clientDetails['apikey'] = env('api_key', '');
 
-        if ($clientDetails['keka_client_id'] && $clientDetails['keka_secret_key']) {
+        if ($clientDetails['keka_client_id'] && $clientDetails['keka_secret_key'] && $clientDetails['apikey']) {
             return $clientDetails;
         } else
             throw new \Exception('Please Provide the Keka Client Details');
