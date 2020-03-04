@@ -9,10 +9,10 @@ namespace Successive\Keka\Http\Services;
 class KekaAuthorization
 {
 
-//    private const AUTHORIZATION_URL = 'https://app.keka.com/connect/authorize';
     private const TOKEN_URL = 'https://app.keka.com/connect/token';
     private const scope = 'kekaapi';
-    private const GRANT_TYPE = 'code';
+    private const GRANT_TYPE = 'kekaapi';
+    private  const  API_KEY = 'xnxL4TmblPYFNhTtT9UCrUeRledrXGKpKXKu5qYgJsY=';
 
     /**
      *get the access token and set it into session
@@ -53,10 +53,11 @@ class KekaAuthorization
         try {
             $client_id = $clientDetails['keka_client_id'];
             $client_secret = $clientDetails['keka_secret_key'];
-            $content = "grant_type=" . self::GRANT_TYPE . "&scope=" . self::scope;
-
+            $content = "grant_type=" . self::GRANT_TYPE . "&scope=" . self::scope.'&apikey='.self::API_KEY;
             $authorization = base64_encode("$client_id:$client_secret");
-            $header = array("Authorization: Basic {$authorization}", "Content-Type: application/x-www-form-urlencoded");
+            $header = array("Authorization: Basic {$authorization}",
+                       "Content-Type: application/x-www-form-urlencoded",
+                        "Host: app.keka.com");
 
             $curl = curl_init();
             curl_setopt_array($curl, array(

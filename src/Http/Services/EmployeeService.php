@@ -2,8 +2,6 @@
 
 namespace Successive\Keka\Http\Services;
 
-
-use Illuminate\Support\Facades\Redis;
 use  Successive\Keka\Http\Services\CurlHelper;
 
 
@@ -22,7 +20,6 @@ class EmployeeService{
     const GET_EMPLOYEE_BY_ID_API = 'https://api.keka.com/v1/employees/';
 
     //method constants
-    const POST_METHOD = 'POST';
     const  GET_METHOD = 'GET';
 
     /**
@@ -30,7 +27,7 @@ class EmployeeService{
      * @return mixed
      */
     public function getEmployees($data = false){
-        return $this->curlHelper->CallAPI(self::POST_METHOD, self::GET_ALL_EMPLOYEES_API, $data);
+        return $this->curlHelper->CallAPI(self::GET_METHOD, self::GET_ALL_EMPLOYEES_API, $data);
     }
 
     /**
@@ -39,9 +36,9 @@ class EmployeeService{
      * @param $data
      * @return mixed
      */
-    public function getEmployeeBYId($data){
+    public function getEmployeeByEmpNo($data){
         if(is_string($data)){
-            return $this->curlHelper->CallAPI(self::GET_METHOD, self::GET_EMPLOYEE_BY_ID_API, ['id' => $data]);
+            return $this->curlHelper->CallAPI(self::GET_METHOD, self::GET_EMPLOYEE_BY_ID_API, ['employeenumber' => $data]);
         }
         return $this->curlHelper->CallAPI(self::GET_METHOD, self::GET_EMPLOYEE_BY_ID_API, $data);
     }

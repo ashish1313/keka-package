@@ -55,7 +55,7 @@ class CurlHelper
                     $url = sprintf("%s?%s", $url, http_build_query($data));
         }
 
-        $header = array("Authorization: Bearer {$_SESSION['access_token']}");
+        $header = array("Authorization: Bearer {$_SESSION['access_token']}", 'Accept: application/json');
 
         curl_setopt_array($curl, array(
             CURLOPT_URL => $url,
@@ -63,10 +63,11 @@ class CurlHelper
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_RETURNTRANSFER => true
         ));
+
         $response = curl_exec($curl);
         curl_close($curl);
 
-        return json_decode($response, true);
+        return $response;
     }
 
 }
