@@ -14,6 +14,11 @@ class CurlHelper
     private $kekaAuthorization;
 
     /**
+     * base url for keka API
+     */
+    const BASE_URL = 'https://api.keka.com';
+
+    /**
      * CurlHelper constructor.
      */
     public function __construct()
@@ -25,12 +30,12 @@ class CurlHelper
     /**
      *
      * @param $method
-     * @param $url
+     * @param $endpoint
      * @param bool $data
      * @return mixed
      * @throws \Exception
      */
-    public function CallAPI($method, $url, $data = false)
+    public function CallAPI($method, $endpoint, $data = false)
     {
         if (isset($_SESSION['access_token_expiry'])) {
             if (time() > $_SESSION['access_token_expiry']){
@@ -52,13 +57,13 @@ class CurlHelper
                 break;
             default:
                 if ($data)
-                    $url = sprintf("%s?%s", $url, http_build_query($data));
+                    $endpoint = sprintf("%s?%s", $endpoint, http_build_query($data));
         }
 
         $header = array("Authorization: Bearer {$_SESSION['access_token']}", 'Accept: application/json');
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $url,
+            CURLOPT_URL => self::BASE_URL.$endpoint,
             CURLOPT_HTTPHEADER => $header,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_RETURNTRANSFER => true
