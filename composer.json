@@ -22,5 +22,10 @@
                 "Successive\\Keka\\KekaServiceProvider"
             ]
         }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "php artisan vendor:publish"
+        ]
     }
 }
