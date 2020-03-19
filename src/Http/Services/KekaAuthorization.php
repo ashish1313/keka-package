@@ -84,9 +84,12 @@ class KekaAuthorization
      */
     protected function getClientDetails()
     {
-        $clientDetails['keka_client_id'] = config('keka.keka_client_id');
-        $clientDetails['keka_secret_key'] = config('keka.keka_secret_key');
-        $clientDetails['apikey'] = config('keka.api_key');
+//        $clientDetails['keka_client_id'] = config('keka.keka_client_id');
+//        $clientDetails['keka_secret_key'] = config('keka.keka_secret_key');
+//        $clientDetails['apikey'] = config('keka.api_key');
+        $clientDetails['keka_client_id'] = 'd25c85ab-76de-4df0-af0b-5bb72491c3b1';
+        $clientDetails['keka_secret_key'] = 'iIHVhbUiDyQeiedcQNfW';
+        $clientDetails['apikey'] = 'xnxL4TmblPYFNhTtT9UCrUeRledrXGKpKXKu5qYgJsY=';
         if ($clientDetails['keka_client_id'] && $clientDetails['keka_secret_key'] && $clientDetails['apikey']) {
             return $clientDetails;
         } else
