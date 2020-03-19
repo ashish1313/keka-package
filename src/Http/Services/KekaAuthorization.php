@@ -30,14 +30,14 @@ class KekaAuthorization
             throw new \Exception($data['error']);
         }
 
-        if(array_key_exists('access_token', $data) && array_key_exists('expires_in', $data) ){
+        if (array_key_exists('access_token', $data) && array_key_exists('expires_in', $data)) {
             session_start();
             // Save the access token expiry timestamp
             $_SESSION['access_token_expiry'] = time() + $data['expires_in'];
 
             $_SESSION['access_token'] = $data['access_token'];
             return true;
-        }else{
+        } else {
             throw new \Exception('Response does not contain either Access token or Expiry time');
         }
     }
@@ -53,11 +53,11 @@ class KekaAuthorization
         try {
             $client_id = $clientDetails['keka_client_id'];
             $client_secret = $clientDetails['keka_secret_key'];
-            $content = "grant_type=" . self::GRANT_TYPE . "&scope=" . self::scope.'&apikey='.$clientDetails['apikey'];
+            $content = "grant_type=" . self::GRANT_TYPE . "&scope=" . self::scope . '&apikey=' . $clientDetails['apikey'];
             $authorization = base64_encode("$client_id:$client_secret");
             $header = array("Authorization: Basic {$authorization}",
-                       "Content-Type: application/x-www-form-urlencoded",
-                        "Host: app.keka.com");
+                "Content-Type: application/x-www-form-urlencoded",
+                "Host: app.keka.com");
 
             $curl = curl_init();
             curl_setopt_array($curl, array(
@@ -84,10 +84,9 @@ class KekaAuthorization
      */
     protected function getClientDetails()
     {
-        $clientDetails['keka_client_id'] = env('keka_client_id', '');
-        $clientDetails['keka_secret_key'] = env('keka_secret_key', '');
-        $clientDetails['apikey'] = env('api_key', '');
-
+        $clientDetails['keka_client_id'] = config('keka.keka_client_id');
+        $clientDetails['keka_secret_key'] = config('keka.keka_secret_key');
+        $clientDetails['apikey'] = config('keka.api_key');
         if ($clientDetails['keka_client_id'] && $clientDetails['keka_secret_key'] && $clientDetails['apikey']) {
             return $clientDetails;
         } else
